@@ -11,8 +11,8 @@ func console(s string) {
 	fmt.Println(s)
 }
 
-func errlog(err int, s string) {
-	fmt.Printf("errlog:%d %s\n", err, s)
+func errlog(err libyara.ErrNo, s string) {
+	fmt.Printf("errlog:%d:%s %s\n", err, err.String(), s)
 }
 
 func scanner(yr *libyara.YaraRule) int {

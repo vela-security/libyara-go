@@ -40,9 +40,9 @@ func Console(fn func(string)) func(*Option) {
 	}
 }
 
-func ErrLog(fn func(int, string)) func(*Option) {
+func ErrLog(fn func(ErrNo, string)) func(*Option) {
 	return func(opt *Option) {
-		cb := func(err int, ys *YaraString) int {
+		cb := func(err ErrNo, ys *YaraString) int {
 			fn(err, unsafe.String(ys.Data, ys.Size))
 			return 0
 		}
