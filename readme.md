@@ -1,6 +1,7 @@
 # libyara-go
 
-[![Go Reference](about:sanitized)](https://pkg.go.dev/github.com/vela-security/libyara-go/pkg)
+[![Go Reference](https://pkg.go.dev/badge/github.com/vela-security/libyara-go.svg)](https://pkg.go.dev/github.com/vela-security/libyara-go)
+
 [中文文档](README_zh.md)
 
 
