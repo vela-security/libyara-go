@@ -22,10 +22,9 @@ func scanner(yr *libyara.YaraRule) int {
 }
 
 func main() {
-	path, _ := filepath.Abs("testdata\\libyara64.dll")
+	yaraDLLPath := filepath.Join("testdata", "libyara64.dll")
 
-	//lib
-	lib, err := libyara.LazyDLL(path, libyara.Console(console), libyara.ErrLog(errlog), libyara.Scanner(scanner))
+	lib, err := libyara.LazyDLL(yaraDLLPath, libyara.Console(console), libyara.ErrLog(errlog), libyara.Scanner(scanner))
 	if err != nil {
 		fmt.Printf("libyara lazyDll fail %v\n", err)
 		return
