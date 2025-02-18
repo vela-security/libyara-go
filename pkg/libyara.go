@@ -2,8 +2,9 @@ package libyara
 
 import (
 	"fmt"
-	"github.com/ebitengine/purego"
 	"syscall"
+
+	"github.com/ebitengine/purego"
 )
 
 /*

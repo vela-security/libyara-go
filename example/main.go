@@ -2,9 +2,10 @@ package main
 
 import (
 	"fmt"
-	libyara "github.com/vela-security/libyara-go"
 	"os"
 	"path/filepath"
+
+	libyara "github.com/vela-security/libyara-go/pkg"
 )
 
 func console(s string) {
@@ -21,8 +22,7 @@ func scanner(yr *libyara.YaraRule) int {
 }
 
 func main() {
-	//dll 路径
-	path, _ := filepath.Abs("yara-c\\windows\\vs2017\\libyara\\Debug\\libyara64.dll")
+	path, _ := filepath.Abs("testdata\\libyara64.dll")
 
 	//lib
 	lib, err := libyara.LazyDLL(path, libyara.Console(console), libyara.ErrLog(errlog), libyara.Scanner(scanner))
@@ -41,13 +41,13 @@ func main() {
 
 	rText, _ := os.ReadFile("testdata\\test.yar")
 	if e := yara.AddRule(rText); e != nil {
-		fmt.Println(e.Error())
 		return
 	}
 
 	rPath, _ := filepath.Abs("testdata\\test2.yar")
+	fmt.Printf("path:%s\n", rPath)
 	if e := yara.AddRuleFile(rPath); e != nil {
-		fmt.Println(e.Error())
+		fmt.Println("AddRuleFile ERROR:", e.Error())
 		return
 	}
 	println("size:", yara.Size())

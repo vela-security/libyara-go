@@ -76,7 +76,7 @@ func (yc *YaraContext) AddRuleFile(path string) error {
 	if len(path) == 0 {
 		return nil
 	}
-	v := []byte(path)
+	v, _ := EncodeString(path)
 	rc := yc.lib.callback.AddRuleFile(yc.context, &v[0], nil, yc.lib.ErrLog())
 	if rc != 1 {
 		return fmt.Errorf("add rule file fail code:%d", rc)
@@ -107,7 +107,8 @@ func (yc *YaraContext) ScanFile(path string, flags uint32, timeout uint32) error
 	if len(path) == 0 {
 		return nil
 	}
-	v := []byte(path)
+
+	v, _ := EncodeString(path)
 
 	rc := yc.lib.callback.ScanFile(yc.context, &v[0], flags, timeout, yc.lib.Handler(), yc.lib.ErrLog())
 	if rc != 1 {

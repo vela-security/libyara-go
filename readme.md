@@ -1,77 +1,93 @@
-# libyara-go 
+# libyara-go
 
-对libyara底层库进程接口导出的微改封装 , 可以方便go在windows 和 Linux 平台使用 libyara的功能 ,不依赖CGO的方式
-
-
-## 安装库
-
-需要编译dll文件, 有编译好的的libyara64.dll(yara-c/windows/vs2017/libyara/Debug/libyara64.dll)
-
-源码是完全同步的libyara源码, 可以自行编译libyara库, 编译方法参考libyara的编译方法 扩展了 libyara-cgo.h 和 libyara-cgo.c 两个文件, 可以方便的导出libyara的接口
+[![Go Reference](about:sanitized)](https://pkg.go.dev/github.com/vela-security/libyara-go/pkg)
+[中文文档](README_zh.md)
 
 
-## 案例
-```golang
+`libyara-go` is a lightweight, modified encapsulation project that exports interfaces for the `libyara` underlying library. Its biggest highlight is that it **does not depend on CGO**, allowing Go language to easily use `libyara`'s functionalities on Windows and Linux platforms (subsequent releases), achieving a more convenient and efficient calling experience.
+
+## Project Highlights ✨
+
+  * **Pure Go implementation, no CGO required:**  Bid farewell to the compilation and deployment challenges brought by CGO, and enjoy the simplicity and convenience of pure Go. Cross-platform compilation is no longer a concern, making it easy to integrate YARA functionality into your Go applications.
+  * **High Performance:**  Optimized specifically for Go language, it performs excellently in rule compilation and scanning speed, meeting your ultimate pursuit of performance.
+  * **Easy to Use:**  Provides a simple and intuitive API for quick start, easily applying YARA rules to your Go projects.
+
+## Detailed Description
+
+`libyara-go` has made simple extensions to the [VirusTotal/yara](https://github.com/VirusTotal/yara) official library. By adding two files, `libyara-cgo.h` and `libyara-cgo.c`, it enables Go language to call `libyara` functionalities on Windows and Linux platforms without relying on CGO.
+
+In the Go code part, the project implements a series of corresponding Yara calling methods, providing a simple and intuitive API. These methods are specifically optimized for Go language features and perform excellently in rule compilation and scanning speed. Developers can use these methods to easily apply YARA rules to their own Go projects without worrying about the compilation complexity, performance overhead, and deployment difficulties associated with traditional CGO calls.
+
+Whether it's for malware analysis, threat intelligence detection, or incident response and other security-related work, `libyara-go` can provide an efficient and convenient solution.
+
+🏗 **The project is currently in the initial experimental stage.** It has implemented several of the most commonly used Yara calling methods. We will continue to improve and optimize the project in the future to provide convenience for more security field developers.
+
+The project is currently mainly tested on the Windows platform to solve the problem of difficult compilation when using cgo on Windows. The availability on the Linux platform will be tested later (theoretically feasible).
+
+## Quick Start
+
+### Installation
+
+```bash
+go get github.com/vela-security/libyara-go/pkg
+```
+
+### Download Dynamic Library
+
+  - Download the `libyara64.dll` file and place it in the project root directory.
+
+> The project provides a compiled `libyara64.dll` (`testdata/libyara64.dll`).
+> If you want to manually compile the `libyara64` library, refer to the compilation method of the [VirusTotal/yara](https://github.com/VirusTotal/yara) official library.
+
+### Example Usage
+
+```golang:example/main.go
 package main
 
 import (
-	"fmt"
-	libyara "github.com/vela-security/libyara-go"
-	"os"
-	"path/filepath"
+    "fmt"
+    libyara "github.com/vela-security/libyara-go/pkg"
+    "os"
+    "path/filepath"
 )
 
 func console(s string) {
-	fmt.Println(s)
+    fmt.Println(s)
 }
 
 func errlog(err int, s string) {
-	fmt.Printf("errlog:%d %s\n", err, s)
+    fmt.Printf("errlog:%d %s\n", err, s)
 }
 
 func scanner(yr *libyara.YaraRule) int {
-	fmt.Printf("code:%d flags:%d rule:%s tags:%s\n", yr.Code, yr.Flags, yr.Rule(), yr.Tag())
-	return libyara.CONTINUE
+    fmt.Printf("code:%d flags:%d rule:%s tags:%s\n", yr.Code, yr.Flags, yr.Rule(), yr.Tag())
+    return libyara.CONTINUE
 }
 
 func main() {
-	//dll 路径
-	path, _ := filepath.Abs("yara-c\\windows\\vs2017\\libyara\\Debug\\libyara64.dll")
+    // DLL 路径
+    path, _ := filepath.Abs("libyara64.dll")
 
-	//lib
-	lib, err := libyara.LazyDLL(path, libyara.Console(console), libyara.ErrLog(errlog), libyara.Scanner(scanner))
-	if err != nil {
-		fmt.Printf("libyara lazyDll fail %v\n", err)
-		return
-	}
+    // 加载库
+    lib, err := libyara.LazyDLL(path, libyara.Console(console), libyara.ErrLog(errlog), libyara.Scanner(scanner))
+    if err != nil {
+        fmt.Printf("libyara lazyDll fail %v\n", err)
+        return
+    }
 
-	yara, err := lib.Create()
-	if err != nil {
-		fmt.Println(err)
-		return
-	}
+    yara, err := lib.Create()
+    if err != nil {
+        fmt.Println(err)
+        return
+    }
 
-	println("status:", yara.Status())
+    rText, _ := os.ReadFile("testdata\\test.yar")
+    if e := yara.AddRule(rText); e != nil {
+        fmt.Println(e.Error())
+        return
+    }
 
-	rText, _ := os.ReadFile("testdata\\test.yar")
-	if e := yara.AddRule(rText); e != nil {
-		fmt.Println(e.Error())
-		return
-	}
-
-	rPath, _ := filepath.Abs("testdata\\test2.yar")
-	if e := yara.AddRuleFile(rPath); e != nil {
-		fmt.Println(e.Error())
-		return
-	}
-	println("size:", yara.Size())
-
-	if e := yara.Apply(); e != nil {
-		fmt.Println(e.Error())
-		return
-	}
-
-	vPath, _ := filepath.Abs("testdata\\spy.Bin")
+    vPath, _ := filepath.Abs("testdata\\spy.Bin")
 	text, _ := os.ReadFile(vPath)
 
 	if e := yara.ScanFile(vPath, 0, 10000); e != nil {
@@ -86,3 +102,15 @@ func main() {
 	}
 }
 ```
+
+## Additional Resources
+
+**awesome-yara**: InQuest has compiled a comprehensive list of YARA-related resources, which is worth checking out.
+
+## Contributing
+
+The project is currently only in the initial experimental stage. We warmly welcome community developers to participate in this project. You can contribute in the following ways:
+
+  - Submit code: Fix bugs, add new features, or optimize existing code.
+  - Report issues: If you encounter problems during use, please submit an issue on GitHub.
+  - Improve documentation: Help us improve the documentation to make it easier for more people to get started.

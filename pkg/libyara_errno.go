@@ -74,7 +74,7 @@ type ErrNo uint32
 func (en ErrNo) String() string {
 	switch en {
 	case ERROR_SUCCESS:
-		return "SUCCESS"
+		return "ERROR_SUCCESS"
 	case ERROR_INSUFFICIENT_MEMORY:
 		return "ERROR_INSUFFICIENT_MEMORY"
 	case ERROR_COULD_NOT_ATTACH_TO_PROCESS:
