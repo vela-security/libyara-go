@@ -75,8 +75,7 @@ func TestScanFile01(t *testing.T) {
 
 // TestScanFile02 tests scanning a file with multiple YARA rules.
 func TestScanFile02(t *testing.T) {
-	// 1. 使用相对路径，方便测试迁移
-	yaraDLLPath := filepath.Join("..", "testdata", "libyara64.dll") // 假设 DLL 文件在 testdata 目录下
+	yaraDLLPath := filepath.Join("..", "testdata", "libyara64.dll")
 	ruleFilePath1 := filepath.Join("..", "testdata", "test.yar")
 	ruleFilePath2 := filepath.Join("..", "testdata", "test2.yar")
 	targetFilePath := filepath.Join("..", "testdata", "spy.Bin")

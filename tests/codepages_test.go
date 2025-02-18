@@ -7,7 +7,6 @@ import (
 )
 
 func TestGetSystemANSIEncodePageId(t *testing.T) {
-	// 正常情况
 	codePageID := libyara.GetSystemANSIEncodePageId()
 
 	if codePageID <= 0 {
