@@ -1,4 +1,6 @@
 .idea
 .vscode
+yara-c/.vs/*
+yara-c/.github/*
 cmd/*
 *.exe
